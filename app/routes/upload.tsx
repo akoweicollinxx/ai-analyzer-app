@@ -5,7 +5,7 @@ import {usePuterStore} from "~/lib/puter";
 import {useNavigate} from "react-router";
 import {convertPdfToImage} from "~/lib/pdf2img";
 import {generateUUID} from "~/lib/utils";
-import {prepareInstructions} from "../../constants";
+import {prepareInstructions, AIResponseFormat} from "../../constants";
 
 const Upload = () => {
     const {auth, isLoading, fs, ai, kv} = usePuterStore();
@@ -42,11 +42,11 @@ const Upload = () => {
             jobDescription,
             feedback: '',
         }
-        await kv.set(`resume:${uuid}, JSON`, JSON.stringify(data));
+        await kv.set(`resume:${uuid}`, JSON.stringify(data));
         setStatusText('Analyzing...');
         const feedback = await ai.feedback(
             uploadedFile.path,
-            prepareInstructions({AIResponseFormat: "", jobTitle, jobDescription })
+            prepareInstructions({AIResponseFormat, jobTitle, jobDescription })
         )
         if (!feedback) return setStatusText('Error: Failed to analyze');
         const feedbackText = typeof feedback.message.content === 'string' ? feedback.message.content : feedback.message.content[0].text;
@@ -100,7 +100,7 @@ const Upload = () => {
                         </div>
                         <div className="form-div">
                             <label htmlFor="job-description">Job Description</label>
-                            <textarea rows={5} name="job-descriptions" placeholder="Job Description" id="job-description" />
+                            <textarea rows={5} name="job-description" placeholder="Job Description" id="job-description" />
                         </div>
 
                         <div className="form-div">
