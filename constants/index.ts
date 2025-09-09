@@ -3,7 +3,6 @@ export const resumes: Resume[] = [
         id: "1",
         companyName: "Google",
         jobTitle: "Frontend Developer",
-        imagePath: "/images/resume_01.png",
         resumePath: "/resumes/resume-1.pdf",
         feedback: {
             overallScore: 85,
@@ -33,7 +32,6 @@ export const resumes: Resume[] = [
         id: "2",
         companyName: "Microsoft",
         jobTitle: "Cloud Engineer",
-        imagePath: "/images/resume_02.png",
         resumePath: "/resumes/resume-2.pdf",
         feedback: {
             overallScore: 55,
@@ -63,7 +61,6 @@ export const resumes: Resume[] = [
         id: "3",
         companyName: "Apple",
         jobTitle: "iOS Developer",
-        imagePath: "/images/resume_03.png",
         resumePath: "/resumes/resume-3.pdf",
         feedback: {
             overallScore: 75,
@@ -135,6 +132,11 @@ export const AIResponseFormat = `
           explanation: string; //explain in detail here
         }[]; //give 3-4 tips
       };
+      tailoredResume: {
+        content: string; // The full content of the tailored resume in markdown format
+        summary: string; // A brief summary of the changes made to tailor the resume
+        keyChanges: string[]; // List of key changes made to tailor the resume
+      };
     }`;
 
 export const prepareInstructions = ({
@@ -146,15 +148,33 @@ export const prepareInstructions = ({
     jobDescription: string;
     AIResponseFormat: string;
 }) =>
-    `You are an expert in ATS (Applicant Tracking System) and resume analysis.
-  Please analyze and rate this resume and suggest how to improve it.
-  The rating can be low if the resume is bad.
-  Be thorough and detailed. Don't be afraid to point out any mistakes or areas for improvement.
-  If there is a lot to improve, don't hesitate to give low scores. This is to help the user to improve their resume.
-  If available, use the job description for the job user is applying to to give more detailed feedback.
-  If provided, take the job description into consideration.
+    `You are an expert in ATS (Applicant Tracking System), resume analysis, and resume writing.
+  Your task is to:
+  1. Analyze and rate the uploaded resume
+  2. Generate a completely new, tailored resume that is optimized for the provided job description
+  
+  For the analysis part:
+  - Rate the resume thoroughly and provide detailed feedback
+  - Point out any mistakes or areas for improvement
+  - If there is a lot to improve, don't hesitate to give low scores
+  - Take the job description into consideration for your analysis
+  
+  For the tailored resume part:
+  - Create a completely new resume based on the content from the original resume
+  - Tailor it specifically to match the job description and highlight relevant skills/experience
+  - Use a professional, ATS-friendly format that will pass through Applicant Tracking Systems
+  - Strategically incorporate relevant keywords from the job description throughout the resume
+  - Ensure the resume has a clear, scannable structure with appropriate section headings
+  - Use industry-standard terminology that matches what recruiters are looking for
+  - Quantify achievements where possible to demonstrate impact
+  - Maintain truthfulness - don't invent new experiences or skills not mentioned in the original resume
+  - Format the content in markdown for easy conversion to PDF
+  - Provide a brief summary of the changes you made
+  - List key improvements in the tailoredResume.keyChanges array
+  
   The job title is: ${jobTitle}
   The job description is: ${jobDescription}
-  Provide the feedback using the following format: ${AIResponseFormat}
-  Return the analysis as a JSON object, without any other text and without the backticks.
+  
+  Provide the feedback and tailored resume using the following format: ${AIResponseFormat}
+  Return the complete response as a JSON object, without any other text and without the backticks.
   Do not include any other text or comments.`;

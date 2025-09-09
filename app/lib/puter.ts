@@ -335,24 +335,42 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             return;
         }
 
-        return puter.ai.chat(
-            [
-                {
-                    role: "user",
-                    content: [
+        // Create a promise that rejects after a timeout
+        let timeoutId: NodeJS.Timeout;
+        const timeoutPromise = new Promise<AIResponse | undefined>((_, reject) => {
+            timeoutId = setTimeout(() => {
+                reject(new Error("Analysis timed out after 3 minutes. Please try again."));
+            }, 180000); // 3 minutes timeout
+        });
+
+        try {
+            // Race between the AI chat and the timeout
+            return await Promise.race([
+                puter.ai.chat(
+                    [
                         {
-                            type: "file",
-                            puter_path: path,
-                        },
-                        {
-                            type: "text",
-                            text: message,
+                            role: "user",
+                            content: [
+                                {
+                                    type: "file",
+                                    puter_path: path,
+                                },
+                                {
+                                    type: "text",
+                                    text: message,
+                                },
+                            ],
                         },
                     ],
-                },
-            ],
-            { model: "claude-3-7-sonnet" }
-        ) as Promise<AIResponse | undefined>;
+                    { model: "claude-3-7-sonnet" }
+                ) as Promise<AIResponse | undefined>,
+                timeoutPromise
+            ]);
+        } catch (error) {
+            console.error("AI analysis error:", error);
+            setError(error instanceof Error ? error.message : "Analysis failed");
+            return undefined;
+        }
     };
 
     const img2txt = async (image: string | File | Blob, testMode?: boolean) => {

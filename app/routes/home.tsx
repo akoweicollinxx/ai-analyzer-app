@@ -7,8 +7,8 @@ import {useEffect, useState} from "react";
 
 export function meta({}: Route.MetaArgs) {
     return [
-        { title: "Analyze" },
-        { name: "description", content: "Smart feedback for your dream job!" },
+        { title: "FirstImpress" },
+        { name: "description", content: "Smart AI resume generator tailored to every job!" },
     ];
 }
 
@@ -44,11 +44,11 @@ export default function Home() {
 
         <section className="main-section">
             <div className="page-heading py-16">
-                <h1>Track Your Applications & Resume Ratings</h1>
+                <h1>Turn Applications into Interviews with AI Tailored, ATS-Optimized Resumes</h1>
                 {!loadingResumes && resumes?.length === 0 ? (
                     <h2>No resumes found. Upload your first resume to get feedback.</h2>
                 ): (
-                    <h2>Review your submissions and check AI-powered feedback.</h2>
+                    <h2>Instantly generate job-winning resumes tailored and ATS-optimized for each role.</h2>
                 )}
             </div>
             {loadingResumes && (

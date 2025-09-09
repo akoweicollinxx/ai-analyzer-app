@@ -3,20 +3,21 @@ import ScoreCircle from "~/components/ScoreCircle";
 import {useEffect, useState} from "react";
 import {usePuterStore} from "~/lib/puter";
 
-const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath } }: { resume: Resume }) => {
+const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, resumePath } }: { resume: Resume }) => {
     const { fs } = usePuterStore();
     const [resumeUrl, setResumeUrl] = useState('');
 
     useEffect(() => {
         const loadResume = async () => {
-            const blob = await fs.read(imagePath);
+            const blob = await fs.read(resumePath);
             if(!blob) return;
-            let url = URL.createObjectURL(blob);
+            const pdfBlob = new Blob([blob], { type: 'application/pdf' });
+            let url = URL.createObjectURL(pdfBlob);
             setResumeUrl(url);
         }
 
         loadResume();
-    }, [imagePath]);
+    }, [resumePath]);
 
     return (
         <Link to={`/resume/${id}`} className="resume-card animate-in fade-in duration-1000">
@@ -33,9 +34,9 @@ const ResumeCard = ({ resume: { id, companyName, jobTitle, feedback, imagePath }
             {resumeUrl && (
                 <div className="gradient-border animate-in fade-in duration-1000">
                     <div className="w-full h-full">
-                        <img
+                        <iframe
                             src={resumeUrl}
-                            alt="resume"
+                            title="resume"
                             className="w-full h-[350px] max-sm:h-[200px] object-cover object-top"
                         />
                     </div>

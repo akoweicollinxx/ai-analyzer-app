@@ -11,12 +11,12 @@ interface ATSProps {
 }
 
 const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
-    // Determine background gradient based on score
-    const gradientClass = score > 69
-        ? 'from-green-100'
+    // Determine background color based on score
+    const bgColorClass = score > 69
+        ? 'bg-green-50'
         : score > 49
-            ? 'from-yellow-100'
-            : 'from-red-100';
+            ? 'bg-yellow-50'
+            : 'bg-red-50';
 
     // Determine icon based on score
     const iconSrc = score > 69
@@ -33,7 +33,7 @@ const ATS: React.FC<ATSProps> = ({ score, suggestions }) => {
             : 'Needs Improvement';
 
     return (
-        <div className={`bg-gradient-to-b ${gradientClass} to-white rounded-2xl shadow-md w-full p-6`}>
+        <div className={`${bgColorClass} rounded-2xl shadow-md w-full p-6`}>
             {/* Top section with icon and headline */}
             <div className="flex items-center gap-4 mb-6">
                 <img src={iconSrc} alt="ATS Score Icon" className="w-12 h-12" />
