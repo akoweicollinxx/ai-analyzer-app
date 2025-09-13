@@ -1,0 +1,86 @@
+/* Responsive styles for resume content */
+#tailored-resume-content {
+  max-width: 100%;
+  overflow-x: auto;
+  background-color: white;
+  padding: 1.5rem;
+  border: 1px solid #e5e7eb;
+  border-radius: 0.5rem;
+}
+
+#tailored-resume-content * {
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  color: #333333;
+}
+
+#tailored-resume-content h1,
+#tailored-resume-content h2,
+#tailored-resume-content h3,
+#tailored-resume-content h4,
+#tailored-resume-content h5,
+#tailored-resume-content h6 {
+  font-size: clamp(1rem, 1.5vw, 1.5rem);
+  margin-top: 0.75em;
+  margin-bottom: 0.5em;
+  font-weight: 600;
+  color: #111827;
+  background: none;
+}
+
+#tailored-resume-content p,
+#tailored-resume-content li {
+  font-size: clamp(0.875rem, 1vw, 1rem);
+  line-height: 1.5;
+  color: #333333;
+  margin-bottom: 0.5em;
+}
+
+#tailored-resume-content table {
+  width: 100%;
+  display: block;
+  overflow-x: auto;
+  border-collapse: collapse;
+}
+
+#tailored-resume-content img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive iframe for PDF preview */
+.feedback-section iframe {
+  width: 100%;
+  border: none;
+  min-height: 50vh;
+}
+
+@media (max-width: 768px) {
+  #tailored-resume-content {
+    padding: 0.75rem;
+  }
+  
+  .feedback-section iframe {
+    min-height: 60vh;
+  }
+}
+
+@media (max-width: 480px) {
+  #tailored-resume-content h1,
+  #tailored-resume-content h2,
+  #tailored-resume-content h3 {
+    font-size: 1.1rem;
+  }
+  
+  #tailored-resume-content h4,
+  #tailored-resume-content h5,
+  #tailored-resume-content h6 {
+    font-size: 1rem;
+  }
+  
+  #tailored-resume-content p,
+  #tailored-resume-content li {
+    font-size: 0.875rem;
+  }
+}
