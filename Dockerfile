@@ -19,4 +19,9 @@ COPY ./package.json package-lock.json /app/
 COPY --from=production-dependencies-env /app/node_modules /app/node_modules
 COPY --from=build-env /app/build /app/build
 WORKDIR /app
+
+# Set environment variables with default values
+# These can be overridden at runtime
+ENV VITE_CLERK_PUBLISHABLE_KEY=pk_test_dG91Y2hpbmctZ2liYm9uLTMxLmNsZXJrLmFjY291bnRzLmRldiQ
+
 CMD ["npm", "run", "start"]

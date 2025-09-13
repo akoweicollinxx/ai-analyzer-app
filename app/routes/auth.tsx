@@ -10,12 +10,12 @@ export const meta = () => ([
 const Auth = () => {
     const { isLoading, auth } = usePuterStore();
     const location = useLocation();
-    const next = location.search.split('next=')[1];
+    const next = location.search.split('next=')[1] || '/';
     const navigate = useNavigate();
 
     useEffect(() => {
         if(auth.isAuthenticated) navigate(next);
-    }, [auth.isAuthenticated, next])
+    }, [auth.isAuthenticated, next, navigate])
 
     return (
         <main className="bg-[url('/images/bg-auth.svg')] bg-cover min-h-screen flex items-center justify-center">
@@ -38,7 +38,7 @@ const Auth = () => {
                                     </button>
                                 ) : (
                                     <button className="auth-button" onClick={auth.signIn}>
-                                        <p>Log In</p>
+                                        <p>Log In with Puter</p>
                                     </button>
                                 )}
                             </>
