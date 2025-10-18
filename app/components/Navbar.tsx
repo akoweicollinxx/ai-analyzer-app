@@ -11,8 +11,8 @@ const Navbar = () => {
                 <p className="text-2xl font-bold text-gradient">FirstImpress</p>
             </Link>
             <div className="flex gap-4 items-center">
-                <Link to="/upload" className="primary-button w-fit">
-                    <p className="text-2xl font-semibold text-white">Upload Resume</p>
+                <Link to="/upload" className="primary-button px-4 py-2 text-center w-full sm:w-auto">
+                    <p className="text-1xl font-semibold text-white">Upload Resume</p>
                 </Link>
             </div>
         </nav>

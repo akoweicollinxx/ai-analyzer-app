@@ -110,7 +110,7 @@ const Upload = () => {
 
         <section className="main-section">
             <div className="page-heading py-16">
-               <h1>AI Resume Tailoring for Your Dream Job</h1>
+               <h1>Your Resume, Optimized for Success</h1>
                 {isProcessing ? (
                     <>
                         <h2>{statusText}</h2>
@@ -126,7 +126,7 @@ const Upload = () => {
                         </button>
                     </>
                 ) : (
-                    <h2>Upload your resume and job description to get a tailored resume and ATS analysis</h2>
+                    <h2>Upload your resume and job description to get an ATS analysis and a new tailored resume</h2>
                 )}
                 {!isProcessing && (
                     <form id="upload-form" onSubmit={handleSubmit} className="flex flex-col gap-4 mt-8">

@@ -13,42 +13,44 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export default function Home() {
-    const { auth, kv } = usePuterStore();
+    const { auth, kv, fs } = usePuterStore();
     const navigate = useNavigate();
     const [resumes, setResumes] = useState<Resume[]>([]);
     const [loadingResumes, setLoadingResumes] = useState(false);
 
-    useEffect(() => {
-        if(!auth.isAuthenticated) navigate('/auth?next=/');
-    }, [auth.isAuthenticated])
+    // Authentication check removed to allow direct access to homepage
+    // useEffect(() => {
+    //     if(!auth.isAuthenticated) navigate('/auth?next=/');
+    // }, [auth.isAuthenticated])
+
+    const loadResumes = async () => {
+        setLoadingResumes(true);
+
+        const resumes = (await kv.list('resume:*', true)) as KVItem[];
+
+        const parsedResumes = resumes?.map((resume) => (
+            JSON.parse(resume.value) as Resume
+        ))
+
+        setResumes(parsedResumes || []);
+        setLoadingResumes(false);
+    }
 
     useEffect(() => {
-        const loadResumes = async () => {
-            setLoadingResumes(true);
-
-            const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-            const parsedResumes = resumes?.map((resume) => (
-                JSON.parse(resume.value) as Resume
-            ))
-
-            setResumes(parsedResumes || []);
-            setLoadingResumes(false);
-        }
-
-        loadResumes()
+        loadResumes();
     }, []);
+
 
     return <main className="bg-[url('/images/bg-main.svg')] bg-cover">
         <Navbar />
 
         <section className="main-section">
             <div className="page-heading py-16">
-                <h1>Turn Applications into Interviews with AI Tailored, ATS-Optimized Resumes</h1>
+                <h1>Match Every Job Perfectly</h1>
                 {!loadingResumes && resumes?.length === 0 ? (
                     <h2>No resumes found. Upload your first resume to get feedback.</h2>
                 ): (
-                    <h2>Instantly generate job-winning resumes tailored and ATS-optimized for each role.</h2>
+                    <h2>Get your Resume ATS-Optimized and instantly generate job-winning resumes tailored for each role you apply for.</h2>
                 )}
             </div>
             {loadingResumes && (
@@ -60,7 +62,10 @@ export default function Home() {
             {!loadingResumes && resumes.length > 0 && (
                 <div className="resumes-section">
                     {resumes.map((resume) => (
-                        <ResumeCard key={resume.id} resume={resume} />
+                        <ResumeCard 
+                            key={resume.id} 
+                            resume={resume}
+                        />
                     ))}
                 </div>
             )}

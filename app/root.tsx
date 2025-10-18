@@ -11,7 +11,6 @@ import type { Route } from "./+types/root";
 import "./app.css";
 import {useEffect} from "react";
 import { usePuterStore } from "~/lib/puter";
-import SignOutButton from "~/components/SignOutButton";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -44,10 +43,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Links />
       </head>
       <body>
-        {/* Puter script is needed for authentication, file system, KV storage, and AI features */}
+        {/* Puter script is needed for file system, KV storage, and AI features */}
         <script src="https://js.puter.com/v2/"></script>
         {children}
-        <SignOutButton />
         <ScrollRestoration />
         <Scripts />
       </body>

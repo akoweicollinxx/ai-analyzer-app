@@ -19,9 +19,10 @@ const Resume = () => {
     const [feedback, setFeedback] = useState<Feedback | null>(null);
     const navigate = useNavigate();
 
-    useEffect(() => {
-        if (!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
-    }, [isLoading]);
+    // Authentication check removed to allow direct access to resume page
+    // useEffect(() => {
+    //     if (!isLoading && !auth.isAuthenticated) navigate(`/auth?next=/resume/${id}`);
+    // }, [isLoading]);
 
     useEffect(() => {
         const loadResume = async () => {
