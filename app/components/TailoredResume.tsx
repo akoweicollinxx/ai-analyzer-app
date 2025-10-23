@@ -30,7 +30,9 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       tempDiv.style.left = '-9999px';
       tempDiv.style.backgroundColor = '#ffffff';
       tempDiv.style.padding = '20px'; // Add padding for better spacing
-      tempDiv.style.width = '800px'; // A4 width approximation
+      // Use responsive width based on device
+      const isMobile = window.innerWidth < 768;
+      tempDiv.style.width = isMobile ? '100%' : '800px'; // Responsive width for mobile
       
       // Add custom CSS to ensure clean styling for ATS compatibility with no design elements at the top
       const styleElement = document.createElement('style');
@@ -41,9 +43,10 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
               margin-top: 12px;
               margin-bottom: 12px;
               padding: 0;
-              font-size: 1.8em;
+              font-size: ${isMobile ? '1.5em' : '1.8em'};
               text-align: left;
               font-weight: bold;
+              width: 100%;
           }
           #temp-tailored-resume h2, 
           #temp-tailored-resume h3, 
@@ -55,32 +58,40 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
               margin-top: 10px;
               margin-bottom: 8px;
               padding: 0;
-              font-size: 1.2em;
+              font-size: ${isMobile ? '1.1em' : '1.2em'};
               text-align: left;
               font-weight: 600;
+              width: 100%;
           }
           #temp-tailored-resume * {
               font-family: Arial, sans-serif;
               line-height: 1.4;
               margin: 4px 0;
               color: #333333;
+              box-sizing: border-box;
           }
           #temp-tailored-resume {
               max-width: 100%;
-              font-size: 11pt;
+              font-size: ${isMobile ? '10pt' : '11pt'};
               background-color: #ffffff;
-              padding: 20px;
+              padding: ${isMobile ? '15px' : '20px'};
               margin: 0;
+              width: 100%;
           }
           #temp-tailored-resume p {
               margin: 6px 0;
+              width: 100%;
+              word-wrap: break-word;
           }
           #temp-tailored-resume ul, #temp-tailored-resume ol {
               margin: 6px 0;
-              padding-left: 20px;
+              padding-left: ${isMobile ? '15px' : '20px'};
+              width: 100%;
           }
           #temp-tailored-resume li {
               margin: 4px 0;
+              width: 100%;
+              word-wrap: break-word;
           }
       `;
       document.head.appendChild(styleElement);
@@ -116,15 +127,32 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       // Convert the canvas to image data
       const imgData = canvas.toDataURL('image/png');
       
-      // Always fit content on a single page by scaling it down if necessary
-      const scale = Math.min(1, (pageHeight - (margin * 2)) / imgHeight);
+      // Scale content appropriately based on device type
+      let scale;
+      if (isMobile) {
+        // For mobile: use a slightly different scaling approach to ensure content fits well
+        scale = Math.min(1, (pageHeight - (margin * 2)) / imgHeight);
+        // Adjust scale to ensure text is readable on mobile
+        scale = Math.max(scale, 0.85);
+      } else {
+        // For desktop: standard scaling
+        scale = Math.min(1, (pageHeight - (margin * 2)) / imgHeight);
+      }
       const scaledWidth = imgWidth * scale;
       const scaledHeight = imgHeight * scale;
       
-      // Center the content on the page horizontally, but add more space at the top
-      const xOffset = (imgWidth - scaledWidth) / 2;
-      // Add more space at the top to ensure content is clearly visible
-      const yOffset = margin + 10; // Fixed top margin instead of centering vertically
+      // Position content based on device type
+      let xOffset, yOffset;
+      
+      if (isMobile) {
+        // For mobile: align to left with margin for better readability
+        xOffset = margin;
+        yOffset = margin; // Top margin
+      } else {
+        // For desktop: center the content horizontally
+        xOffset = (imgWidth - scaledWidth) / 2;
+        yOffset = margin + 10; // Fixed top margin
+      }
       
       // Add the image to the PDF
       pdf.addImage(
