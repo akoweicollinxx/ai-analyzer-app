@@ -67,144 +67,144 @@ const Resume = () => {
                                 style={{ height: "80vh", width: "100%" }}
                             />
 
-                  {/*          <button*/}
-                  {/*              onClick={async () => {*/}
-                  {/*                  if (!feedback?.tailoredResume?.content) {*/}
-                  {/*                      // fallback to original resume if tailored not found*/}
-                  {/*                      const downloadLink = document.createElement("a");*/}
-                  {/*                      downloadLink.href = resumeUrl;*/}
-                  {/*                      downloadLink.download = "tailored_resume.pdf";*/}
-                  {/*                      document.body.appendChild(downloadLink);*/}
-                  {/*                      downloadLink.click();*/}
-                  {/*                      document.body.removeChild(downloadLink);*/}
-                  {/*                      return;*/}
-                  {/*                  }*/}
+                            <button
+                                onClick={async () => {
+                                    if (!feedback?.tailoredResume?.content) {
+                                        // fallback to original resume if tailored not found
+                                        const downloadLink = document.createElement("a");
+                                        downloadLink.href = resumeUrl;
+                                        downloadLink.download = "tailored_resume.pdf";
+                                        document.body.appendChild(downloadLink);
+                                        downloadLink.click();
+                                        document.body.removeChild(downloadLink);
+                                        return;
+                                    }
 
-                  {/*                  // Temporary div for rendering tailored resume*/}
-                  {/*                  const tempDiv = document.createElement("div");*/}
-                  {/*                  tempDiv.id = "temp-tailored-resume";*/}
-                  {/*                  tempDiv.style.position = "absolute";*/}
-                  {/*                  tempDiv.style.left = "-9999px";*/}
-                  {/*                  tempDiv.style.backgroundColor = "#ffffff";*/}
-                  {/*                  tempDiv.style.padding = "20px";*/}
-                  {/*                  tempDiv.style.width = "800px"; // A4 width*/}
+                                    // Temporary div for rendering tailored resume
+                                    const tempDiv = document.createElement("div");
+                                    tempDiv.id = "temp-tailored-resume";
+                                    tempDiv.style.position = "absolute";
+                                    tempDiv.style.left = "-9999px";
+                                    tempDiv.style.backgroundColor = "#ffffff";
+                                    tempDiv.style.padding = "20px";
+                                    tempDiv.style.width = "800px"; // A4 width
 
-                  {/*                  // Clean minimal ATS-friendly styling*/}
-                  {/*                  const styleElement = document.createElement("style");*/}
-                  {/*                  styleElement.textContent = `*/}
-                  {/*  #temp-tailored-resume h1 {*/}
-                  {/*    color: #111827;*/}
-                  {/*    margin: 12px 0;*/}
-                  {/*    font-size: 2.0em;*/}
-                  {/*    font-weight: bold;*/}
-                  {/*    text-align: left;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume h2, h3, h4, h5, h6 {*/}
-                  {/*    color: #111827;*/}
-                  {/*    margin: 10px 0 8px 0;*/}
-                  {/*    font-size: 1.4em;*/}
-                  {/*    font-weight: 600;*/}
-                  {/*    text-align: left;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume * {*/}
-                  {/*    font-family: Arial, sans-serif;*/}
-                  {/*    line-height: 1.3;*/}
-                  {/*    margin: 3px 0;*/}
-                  {/*    color: #333333;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume {*/}
-                  {/*    font-size: 13pt;*/}
-                  {/*    background-color: #ffffff;*/}
-                  {/*    padding: 15px;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume p {*/}
-                  {/*    margin: 4px 0;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume ul, #temp-tailored-resume ol {*/}
-                  {/*    margin: 4px 0;*/}
-                  {/*    padding-left: 18px;*/}
-                  {/*  }*/}
-                  {/*  #temp-tailored-resume li {*/}
-                  {/*    margin: 2px 0;*/}
-                  {/*  }*/}
-                  {/*`;*/}
-                  {/*                  document.head.appendChild(styleElement);*/}
+                                    // Clean minimal ATS-friendly styling
+                                    const styleElement = document.createElement("style");
+                                    styleElement.textContent = `
+                    #temp-tailored-resume h1 {
+                      color: #111827;
+                      margin: 12px 0;
+                      font-size: 2.0em;
+                      font-weight: bold;
+                      text-align: left;
+                    }
+                    #temp-tailored-resume h2, h3, h4, h5, h6 {
+                      color: #111827;
+                      margin: 10px 0 8px 0;
+                      font-size: 1.4em;
+                      font-weight: 600;
+                      text-align: left;
+                    }
+                    #temp-tailored-resume * {
+                      font-family: Arial, sans-serif;
+                      line-height: 1.3;
+                      margin: 3px 0;
+                      color: #333333;
+                    }
+                    #temp-tailored-resume {
+                      font-size: 13pt;
+                      background-color: #ffffff;
+                      padding: 15px;
+                    }
+                    #temp-tailored-resume p {
+                      margin: 4px 0;
+                    }
+                    #temp-tailored-resume ul, #temp-tailored-resume ol {
+                      margin: 4px 0;
+                      padding-left: 18px;
+                    }
+                    #temp-tailored-resume li {
+                      margin: 2px 0;
+                    }
+                  `;
+                                    document.head.appendChild(styleElement);
 
-                  {/*                  // Convert markdown → HTML*/}
-                  {/*                  const marked = (await import("marked")).marked;*/}
-                  {/*                  const resumeHtml = marked.parse(feedback.tailoredResume.content);*/}
-                  {/*                  tempDiv.innerHTML = resumeHtml;*/}
-                  {/*                  document.body.appendChild(tempDiv);*/}
+                                    // Convert markdown → HTML
+                                    const marked = (await import("marked")).marked;
+                                    const resumeHtml = marked.parse(feedback.tailoredResume.content);
+                                    tempDiv.innerHTML = resumeHtml;
+                                    document.body.appendChild(tempDiv);
 
-                  {/*                  try {*/}
-                  {/*                      // Convert HTML → PDF*/}
-                  {/*                      const html2canvas = (await import("html2canvas")).default;*/}
-                  {/*                      const jsPDF = (await import("jspdf")).jsPDF;*/}
+                                    try {
+                                        // Convert HTML → PDF
+                                        const html2canvas = (await import("html2canvas")).default;
+                                        const jsPDF = (await import("jspdf")).jsPDF;
 
-                  {/*                      const canvas = await html2canvas(tempDiv, {*/}
-                  {/*                          scale: 2,*/}
-                  {/*                          useCORS: true,*/}
-                  {/*                          logging: false,*/}
-                  {/*                          backgroundColor: "#ffffff",*/}
-                  {/*                      });*/}
+                                        const canvas = await html2canvas(tempDiv, {
+                                            scale: 2,
+                                            useCORS: true,
+                                            logging: false,
+                                            backgroundColor: "#ffffff",
+                                        });
 
-                  {/*                      const pdf = new jsPDF({*/}
-                  {/*                          orientation: "portrait",*/}
-                  {/*                          unit: "mm",*/}
-                  {/*                          format: "a4",*/}
-                  {/*                      });*/}
+                                        const pdf = new jsPDF({
+                                            orientation: "portrait",
+                                            unit: "mm",
+                                            format: "a4",
+                                        });
 
-                  {/*                      const imgWidth = 210; // A4 width mm*/}
-                  {/*                      const pageHeight = 297; // A4 height mm*/}
-                  {/*                      const margin = 0; // no margin to use full width of the page*/}
+                                        const imgWidth = 210; // A4 width mm
+                                        const pageHeight = 297; // A4 height mm
+                                        const margin = 0; // no margin to use full width of the page
 
-                  {/*                      const imgHeight = (canvas.height * imgWidth) / canvas.width;*/}
-                  {/*                      const imgData = canvas.toDataURL("image/png");*/}
+                                        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+                                        const imgData = canvas.toDataURL("image/png");
 
-                  {/*                      const scale = Math.min(1, (pageHeight - margin * 2) / imgHeight);*/}
-                  {/*                      const scaledWidth = imgWidth * scale;*/}
-                  {/*                      const scaledHeight = imgHeight * scale;*/}
+                                        const scale = Math.min(1, (pageHeight - margin * 2) / imgHeight);
+                                        const scaledWidth = imgWidth * scale;
+                                        const scaledHeight = imgHeight * scale;
 
-                  {/*                      const xOffset = margin; // Position at left edge for full width*/}
-                  {/*                      const yOffset = margin; // Top margin*/}
+                                        const xOffset = margin; // Position at left edge for full width
+                                        const yOffset = margin; // Top margin
 
-                  {/*                      pdf.addImage(imgData, "PNG", xOffset, yOffset, scaledWidth, scaledHeight, null, "FAST");*/}
-                  {/*                      pdf.save("tailored_resume.pdf");*/}
-                  {/*                  } catch (error) {*/}
-                  {/*                      console.error("Error generating PDF:", error);*/}
-                  {/*                      alert("Failed to generate PDF. Downloading original resume instead.");*/}
+                                        pdf.addImage(imgData, "PNG", xOffset, yOffset, scaledWidth, scaledHeight, null, "FAST");
+                                        pdf.save("tailored_resume.pdf");
+                                    } catch (error) {
+                                        console.error("Error generating PDF:", error);
+                                        alert("Failed to generate PDF. Downloading original resume instead.");
 
-                  {/*                      const downloadLink = document.createElement("a");*/}
-                  {/*                      downloadLink.href = resumeUrl;*/}
-                  {/*                      downloadLink.download = "tailored_resume.pdf";*/}
-                  {/*                      document.body.appendChild(downloadLink);*/}
-                  {/*                      downloadLink.click();*/}
-                  {/*                      document.body.removeChild(downloadLink);*/}
-                  {/*                  } finally {*/}
-                  {/*                      document.body.removeChild(tempDiv);*/}
-                  {/*                      document.head.removeChild(styleElement);*/}
-                  {/*                  }*/}
-                  {/*              }}*/}
-                  {/*              className="mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold text-base sm:text-lg shadow-md"*/}
-                  {/*          >*/}
-                  {/*              <svg*/}
-                  {/*                  xmlns="http://www.w3.org/2000/svg"*/}
-                  {/*                  width="18"*/}
-                  {/*                  height="18"*/}
-                  {/*                  viewBox="0 0 24 24"*/}
-                  {/*                  fill="none"*/}
-                  {/*                  stroke="currentColor"*/}
-                  {/*                  strokeWidth="2"*/}
-                  {/*                  strokeLinecap="round"*/}
-                  {/*                  strokeLinejoin="round"*/}
-                  {/*                  className="flex-shrink-0"*/}
-                  {/*              >*/}
-                  {/*                  <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>*/}
-                  {/*                  <polyline points="7 10 12 15 17 10"></polyline>*/}
-                  {/*                  <line x1="12" y1="15" x2="12" y2="3"></line>*/}
-                  {/*              </svg>*/}
-                  {/*              <span className="whitespace-nowrap">Download ATS-Friendly Resume</span>*/}
-                  {/*          </button>*/}
+                                        const downloadLink = document.createElement("a");
+                                        downloadLink.href = resumeUrl;
+                                        downloadLink.download = "tailored_resume.pdf";
+                                        document.body.appendChild(downloadLink);
+                                        downloadLink.click();
+                                        document.body.removeChild(downloadLink);
+                                    } finally {
+                                        document.body.removeChild(tempDiv);
+                                        document.head.removeChild(styleElement);
+                                    }
+                                }}
+                                className="mt-4 w-full sm:w-auto px-4 sm:px-6 py-2 sm:py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2 font-semibold text-base sm:text-lg shadow-md"
+                            >
+                                <svg
+                                    xmlns="http://www.w3.org/2000/svg"
+                                    width="18"
+                                    height="18"
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    strokeWidth="2"
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    className="flex-shrink-0"
+                                >
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                    <polyline points="7 10 12 15 17 10"></polyline>
+                                    <line x1="12" y1="15" x2="12" y2="3"></line>
+                                </svg>
+                                <span className="whitespace-nowrap"></span>
+                            </button>
                         </div>
                     )}
                 </section>
