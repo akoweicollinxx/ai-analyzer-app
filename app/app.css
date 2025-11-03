@@ -75,10 +75,10 @@ form {
         @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
     }
     .main-section {
-        @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-auto pb-5;
+        @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-auto pb-5 max-w-7xl;
     }
     .page-heading {
-        @apply flex flex-col items-center gap-8 max-w-4xl text-center max-sm:gap-4;
+        @apply flex flex-col items-center gap-8 max-w-6xl text-center max-sm:gap-4;
     }
     .resumes-section {
         @apply flex flex-wrap max-md:flex-col max-md:gap-4 gap-6 items-start max-md:items-center w-full max-w-[1850px] justify-evenly;
@@ -97,7 +97,7 @@ form {
     }
 
     .navbar {
-        @apply flex flex-row justify-between items-center bg-white rounded-full p-4 w-full px-10 max-w-[1200px] mx-auto;
+        @apply flex flex-row justify-between items-center bg-white rounded-full p-4 w-full px-10 max-w-7xl mx-auto;
     }
 
     .score-badge {

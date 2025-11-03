@@ -25,14 +25,8 @@ export default function Home() {
 
     const loadResumes = async () => {
         setLoadingResumes(true);
-
-        const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-        const parsedResumes = resumes?.map((resume) => (
-            JSON.parse(resume.value) as Resume
-        ))
-
-        setResumes(parsedResumes || []);
+        // Don't load resumes from puter database for home screen
+        setResumes([]);
         setLoadingResumes(false);
     }
 

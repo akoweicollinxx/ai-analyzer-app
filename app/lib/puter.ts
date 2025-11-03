@@ -118,70 +118,43 @@ export const usePuterStore = create<PuterStore>((set, get) => {
 
 
     const checkAuthStatus = async (): Promise<boolean> => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return false;
-        }
-
-        set({ isLoading: true, error: null });
-
-        try {
-            const isSignedIn = await puter.auth.isSignedIn();
-            if (isSignedIn) {
-                const user = await puter.auth.getUser();
-                set({
-                    auth: {
-                        user,
-                        isAuthenticated: true,
-                        signIn: get().auth.signIn,
-                        signOut: get().auth.signOut,
-                        refreshUser: get().auth.refreshUser,
-                        checkAuthStatus: get().auth.checkAuthStatus,
-                        getUser: () => user,
-                    },
-                    isLoading: false,
-                });
-                return true;
-            } else {
-                set({
-                    auth: {
-                        user: null,
-                        isAuthenticated: false,
-                        signIn: get().auth.signIn,
-                        signOut: get().auth.signOut,
-                        refreshUser: get().auth.refreshUser,
-                        checkAuthStatus: get().auth.checkAuthStatus,
-                        getUser: () => null,
-                    },
-                    isLoading: false,
-                });
-                return false;
-            }
-        } catch (err) {
-            const msg =
-                err instanceof Error ? err.message : "Failed to check auth status";
-            setError(msg);
-            return false;
-        }
+        // Always return true with a mocked user to bypass authentication
+        const mockUser = { username: 'guest', email: 'guest@example.com' } as PuterUser;
+        
+        set({
+            auth: {
+                user: mockUser,
+                isAuthenticated: true,
+                signIn: get().auth.signIn,
+                signOut: get().auth.signOut,
+                refreshUser: get().auth.refreshUser,
+                checkAuthStatus: get().auth.checkAuthStatus,
+                getUser: () => mockUser,
+            },
+            isLoading: false,
+            error: null
+        });
+        
+        return true;
     };
 
     const signIn = async (): Promise<void> => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return;
-        }
-
-        set({ isLoading: true, error: null });
-
-        try {
-            await puter.auth.signIn();
-            await checkAuthStatus();
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : "Sign in failed";
-            setError(msg);
-        }
+        // Bypass actual Puter authentication and just set mock authenticated state
+        const mockUser = { username: 'guest', email: 'guest@example.com' } as PuterUser;
+        
+        set({
+            auth: {
+                user: mockUser,
+                isAuthenticated: true,
+                signIn: get().auth.signIn,
+                signOut: get().auth.signOut,
+                refreshUser: get().auth.refreshUser,
+                checkAuthStatus: get().auth.checkAuthStatus,
+                getUser: () => mockUser,
+            },
+            isLoading: false,
+            error: null
+        });
     };
 
     const signOut = async (): Promise<void> => {
@@ -214,47 +187,59 @@ export const usePuterStore = create<PuterStore>((set, get) => {
     };
 
     const refreshUser = async (): Promise<void> => {
-        const puter = getPuter();
-        if (!puter) {
-            setError("Puter.js not available");
-            return;
-        }
-
-        set({ isLoading: true, error: null });
-
-        try {
-            const user = await puter.auth.getUser();
-            set({
-                auth: {
-                    user,
-                    isAuthenticated: true,
-                    signIn: get().auth.signIn,
-                    signOut: get().auth.signOut,
-                    refreshUser: get().auth.refreshUser,
-                    checkAuthStatus: get().auth.checkAuthStatus,
-                    getUser: () => user,
-                },
-                isLoading: false,
-            });
-        } catch (err) {
-            const msg = err instanceof Error ? err.message : "Failed to refresh user";
-            setError(msg);
-        }
+        // Use mock user instead of fetching from Puter
+        const mockUser = { username: 'guest', email: 'guest@example.com' } as PuterUser;
+        
+        set({
+            auth: {
+                user: mockUser,
+                isAuthenticated: true,
+                signIn: get().auth.signIn,
+                signOut: get().auth.signOut,
+                refreshUser: get().auth.refreshUser,
+                checkAuthStatus: get().auth.checkAuthStatus,
+                getUser: () => mockUser,
+            },
+            isLoading: false,
+            error: null
+        });
     };
 
     const init = (): void => {
         const puter = getPuter();
         if (puter) {
-            set({ puterReady: true });
-            checkAuthStatus();
+            set({ 
+                puterReady: true,
+                auth: {
+                    // Mock authenticated user to prevent auth popups
+                    user: { username: 'guest', email: 'guest@example.com' } as PuterUser,
+                    isAuthenticated: true,
+                    signIn: get().auth.signIn,
+                    signOut: get().auth.signOut,
+                    refreshUser: get().auth.refreshUser,
+                    checkAuthStatus: get().auth.checkAuthStatus,
+                    getUser: () => ({ username: 'guest', email: 'guest@example.com' } as PuterUser),
+                }
+            });
             return;
         }
 
         const interval = setInterval(() => {
             if (getPuter()) {
                 clearInterval(interval);
-                set({ puterReady: true });
-                checkAuthStatus();
+                set({ 
+                    puterReady: true,
+                    auth: {
+                        // Mock authenticated user to prevent auth popups
+                        user: { username: 'guest', email: 'guest@example.com' } as PuterUser,
+                        isAuthenticated: true,
+                        signIn: get().auth.signIn,
+                        signOut: get().auth.signOut,
+                        refreshUser: get().auth.refreshUser,
+                        checkAuthStatus: get().auth.checkAuthStatus,
+                        getUser: () => ({ username: 'guest', email: 'guest@example.com' } as PuterUser),
+                    }
+                });
             }
         }, 100);
 
@@ -272,7 +257,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.write(path, data);
+        try {
+            return await puter.fs.write(path, data);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("File write operation attempted without authentication");
+            return undefined;
+        }
     };
 
     const readDir = async (path: string) => {
@@ -281,7 +272,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.readdir(path);
+        try {
+            return await puter.fs.readdir(path);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("Directory read operation attempted without authentication");
+            return [];
+        }
     };
 
     const readFile = async (path: string) => {
@@ -290,7 +287,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.read(path);
+        try {
+            return await puter.fs.read(path);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("File read operation attempted without authentication");
+            return undefined;
+        }
     };
 
     const upload = async (files: File[] | Blob[]) => {
@@ -299,7 +302,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.upload(files);
+        try {
+            return await puter.fs.upload(files);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("File upload operation attempted without authentication");
+            return undefined;
+        }
     };
 
     const deleteFile = async (path: string) => {
@@ -308,7 +317,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.fs.delete(path);
+        try {
+            return await puter.fs.delete(path);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("File delete operation attempted without authentication");
+            return;
+        }
     };
 
     const chat = async (
@@ -322,10 +337,16 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        // return puter.ai.chat(prompt, imageURL, testMode, options);
-        return puter.ai.chat(prompt, imageURL, testMode, options) as Promise<
-            AIResponse | undefined
-        >;
+        try {
+            // return puter.ai.chat(prompt, imageURL, testMode, options);
+            return await puter.ai.chat(prompt, imageURL, testMode, options) as Promise<
+                AIResponse | undefined
+            >;
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("AI chat operation attempted without authentication");
+            return undefined;
+        }
     };
 
     const feedback = async (path: string, message: string) => {
@@ -368,7 +389,12 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             ]);
         } catch (error) {
             console.error("AI analysis error:", error);
-            setError(error instanceof Error ? error.message : "Analysis failed");
+            // If error is due to authentication, provide a more specific message
+            if (error instanceof Error && error.message.includes("auth")) {
+                console.log("AI feedback operation attempted without authentication");
+            } else {
+                setError(error instanceof Error ? error.message : "Analysis failed");
+            }
             return undefined;
         }
     };
@@ -379,7 +405,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.ai.img2txt(image, testMode);
+        try {
+            return await puter.ai.img2txt(image, testMode);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("AI image-to-text operation attempted without authentication");
+            return undefined;
+        }
     };
 
     const getKV = async (key: string) => {
@@ -388,7 +420,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.kv.get(key);
+        try {
+            return await puter.kv.get(key);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("KV get operation attempted without authentication");
+            return null;
+        }
     };
 
     const setKV = async (key: string, value: string) => {
@@ -397,7 +435,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.kv.set(key, value);
+        try {
+            return await puter.kv.set(key, value);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("KV set operation attempted without authentication");
+            return false;
+        }
     };
 
     const deleteKV = async (key: string) => {
@@ -406,7 +450,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.kv.delete(key);
+        try {
+            return await puter.kv.delete(key);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("KV delete operation attempted without authentication");
+            return false;
+        }
     };
 
     const listKV = async (pattern: string, returnValues?: boolean) => {
@@ -418,7 +468,13 @@ export const usePuterStore = create<PuterStore>((set, get) => {
         if (returnValues === undefined) {
             returnValues = false;
         }
-        return puter.kv.list(pattern, returnValues);
+        try {
+            return await puter.kv.list(pattern, returnValues);
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("KV list operation attempted without authentication");
+            return [];
+        }
     };
 
     const flushKV = async () => {
@@ -427,21 +483,28 @@ export const usePuterStore = create<PuterStore>((set, get) => {
             setError("Puter.js not available");
             return;
         }
-        return puter.kv.flush();
+        try {
+            return await puter.kv.flush();
+        } catch (error) {
+            // If error is due to authentication, silently handle it
+            console.log("KV flush operation attempted without authentication");
+            return false;
+        }
     };
 
     return {
-        isLoading: true,
+        isLoading: false,
         error: null,
-        puterReady: false,
+        puterReady: true,
         auth: {
-            user: null,
-            isAuthenticated: false,
+            // Mock authenticated user in initial state
+            user: { username: 'guest', email: 'guest@example.com' } as PuterUser,
+            isAuthenticated: true,
             signIn,
             signOut,
             refreshUser,
             checkAuthStatus,
-            getUser: () => get().auth.user,
+            getUser: () => ({ username: 'guest', email: 'guest@example.com' } as PuterUser),
         },
         fs: {
             write: (path: string, data: string | File | Blob) => write(path, data),

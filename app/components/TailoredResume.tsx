@@ -32,7 +32,9 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       tempDiv.style.padding = '20px'; // Add padding for better spacing
       // Use responsive width based on device
       const isMobile = window.innerWidth < 768;
-      tempDiv.style.width = isMobile ? '100%' : '800px'; // Responsive width for mobile
+      // Set a fixed width that works well for PDF generation regardless of device
+      tempDiv.style.width = '800px'; 
+      tempDiv.style.maxWidth = '100%';
       
       // Add custom CSS to ensure clean styling for ATS compatibility with no design elements at the top
       const styleElement = document.createElement('style');
@@ -40,13 +42,14 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
           #temp-tailored-resume h1 {
               color: #111827;
               background-color: transparent;
-              margin-top: 12px;
-              margin-bottom: 12px;
+              margin-top: 8px;
+              margin-bottom: 10px;
               padding: 0;
               font-size: ${isMobile ? '1.5em' : '1.8em'};
               text-align: left;
               font-weight: bold;
               width: 100%;
+              page-break-after: avoid;
           }
           #temp-tailored-resume h2, 
           #temp-tailored-resume h3, 
@@ -55,43 +58,71 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
           #temp-tailored-resume h6 {
               color: #111827;
               background-color: transparent;
-              margin-top: 10px;
-              margin-bottom: 8px;
+              margin-top: 8px;
+              margin-bottom: 6px;
               padding: 0;
-              font-size: ${isMobile ? '1.1em' : '1.2em'};
+              font-size: ${isMobile ? '1.2em' : '1.3em'};
               text-align: left;
               font-weight: 600;
               width: 100%;
+              page-break-after: avoid;
           }
           #temp-tailored-resume * {
               font-family: Arial, sans-serif;
-              line-height: 1.4;
-              margin: 4px 0;
+              line-height: 1.3;
+              margin: 3px 0;
               color: #333333;
               box-sizing: border-box;
           }
+          /* Page break controls */
+          #temp-tailored-resume section {
+              page-break-inside: avoid;
+          }
+          #temp-tailored-resume .page-break {
+              page-break-before: always;
+          }
+          #temp-tailored-resume .no-break {
+              page-break-inside: avoid;
+          }
           #temp-tailored-resume {
               max-width: 100%;
-              font-size: ${isMobile ? '10pt' : '11pt'};
+              font-size: ${isMobile ? '11pt' : '12pt'};
               background-color: #ffffff;
-              padding: ${isMobile ? '15px' : '20px'};
+              padding: ${isMobile ? '8px' : '12px'};
               margin: 0;
               width: 100%;
+              box-sizing: border-box;
+              overflow: hidden;
           }
           #temp-tailored-resume p {
-              margin: 6px 0;
+              margin: 3px 0;
               width: 100%;
               word-wrap: break-word;
+              text-align: justify;
           }
           #temp-tailored-resume ul, #temp-tailored-resume ol {
-              margin: 6px 0;
-              padding-left: ${isMobile ? '15px' : '20px'};
+              margin: 3px 0;
+              padding-left: ${isMobile ? '12px' : '15px'};
               width: 100%;
           }
           #temp-tailored-resume li {
-              margin: 4px 0;
+              margin: 1px 0;
               width: 100%;
               word-wrap: break-word;
+              text-align: justify;
+          }
+          #temp-tailored-resume a {
+              color: #2563eb;
+              text-decoration: none;
+          }
+          #temp-tailored-resume table {
+              width: 100%;
+              border-collapse: collapse;
+              margin: 5px 0;
+          }
+          #temp-tailored-resume td, #temp-tailored-resume th {
+              padding: 3px;
+              border: 1px solid #ddd;
           }
       `;
       document.head.appendChild(styleElement);
@@ -101,12 +132,26 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       tempDiv.innerHTML = resumeHtml;
       document.body.appendChild(tempDiv);
       
-      // Create a canvas from the temporary div
+      // Create a canvas from the temporary div with improved settings
       const canvas = await html2canvas(tempDiv, {
         scale: 2, // Higher scale for better quality
         useCORS: true,
         logging: false,
-        backgroundColor: '#ffffff'
+        backgroundColor: '#ffffff',
+        windowWidth: 800, // Match the width we set for the temp div
+        windowHeight: tempDiv.scrollHeight,
+        scrollX: 0,
+        scrollY: 0,
+        allowTaint: true,
+        onclone: (clonedDoc) => {
+          // Ensure the cloned document has proper dimensions
+          const clonedDiv = clonedDoc.getElementById('temp-tailored-resume');
+          if (clonedDiv) {
+            clonedDiv.style.width = '800px';
+            clonedDiv.style.height = 'auto';
+            clonedDiv.style.overflow = 'hidden';
+          }
+        }
       });
       
       // Create PDF
@@ -119,7 +164,7 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       // Calculate dimensions for the PDF
       const imgWidth = 210; // A4 width in mm
       const pageHeight = 297; // A4 height in mm (A4 height)
-      const margin = 10; // margin in mm
+      const margin = 5; // Small margin for better appearance
       
       // Calculate the height of the image at full width
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
@@ -127,44 +172,78 @@ const TailoredResume: React.FC<TailoredResumeProps> = ({ tailoredResume }) => {
       // Convert the canvas to image data
       const imgData = canvas.toDataURL('image/png');
       
-      // Scale content appropriately based on device type
-      let scale;
-      if (isMobile) {
-        // For mobile: use a slightly different scaling approach to ensure content fits well
-        scale = Math.min(1, (pageHeight - (margin * 2)) / imgHeight);
-        // Adjust scale to ensure text is readable on mobile
-        scale = Math.max(scale, 0.85);
+      // Improved scaling logic that works consistently across all devices
+      // Calculate available space (accounting for margins)
+      const availableHeight = pageHeight - (margin * 2);
+      
+      // Determine if content needs scaling
+      const needsScaling = imgHeight > availableHeight;
+      
+      // Calculate scale factor - if content fits, use 1, otherwise scale down proportionally
+      const scale = needsScaling ? availableHeight / imgHeight : 1;
+      
+      // Apply scale with a small reduction to ensure no overflow
+      const safeScale = scale * 0.98;
+      
+      // Calculate final dimensions
+      const scaledWidth = imgWidth - (margin * 2);
+      const scaledHeight = imgHeight * safeScale;
+      
+      // Center content on page
+      const xOffset = margin;
+      const yOffset = needsScaling ? margin : (pageHeight - scaledHeight) / 2;
+      
+      // Check if content exceeds a single page
+      const contentExceedsPage = scaledHeight > pageHeight;
+      
+      if (contentExceedsPage) {
+        // For multi-page content, use a different approach
+        let remainingHeight = imgHeight;
+        let currentPosition = 0;
+        
+        // Process each page
+        while (remainingHeight > 0) {
+          // Add image for current page section
+          pdf.addImage(
+            imgData,
+            'PNG',
+            xOffset,
+            yOffset - currentPosition,
+            scaledWidth,
+            imgHeight,
+            null,
+            'FAST',
+            // Clip to page height
+            {
+              sourceX: 0,
+              sourceY: currentPosition,
+              sourceWidth: canvas.width,
+              sourceHeight: Math.min(remainingHeight, pageHeight / scale)
+            }
+          );
+          
+          // Move to next section
+          currentPosition += pageHeight / scale;
+          remainingHeight -= pageHeight / scale;
+          
+          // Add new page if there's more content
+          if (remainingHeight > 0) {
+            pdf.addPage();
+          }
+        }
       } else {
-        // For desktop: standard scaling
-        scale = Math.min(1, (pageHeight - (margin * 2)) / imgHeight);
+        // For single page content, use the original approach
+        pdf.addImage(
+          imgData, 
+          'PNG', 
+          xOffset,
+          yOffset,
+          scaledWidth,
+          scaledHeight,
+          null,
+          'FAST'
+        );
       }
-      const scaledWidth = imgWidth * scale;
-      const scaledHeight = imgHeight * scale;
-      
-      // Position content based on device type
-      let xOffset, yOffset;
-      
-      if (isMobile) {
-        // For mobile: align to left with margin for better readability
-        xOffset = margin;
-        yOffset = margin; // Top margin
-      } else {
-        // For desktop: center the content horizontally
-        xOffset = (imgWidth - scaledWidth) / 2;
-        yOffset = margin + 10; // Fixed top margin
-      }
-      
-      // Add the image to the PDF
-      pdf.addImage(
-        imgData, 
-        'PNG', 
-        xOffset, // x position with centering
-        yOffset, // y position with centering
-        scaledWidth, // scaled width
-        scaledHeight, // scaled height
-        null, // alias
-        'FAST' // compression
-      );
       
       // Generate PDF as blob
       const pdfBlob = pdf.output('blob');
