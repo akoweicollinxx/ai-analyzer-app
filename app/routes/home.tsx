@@ -42,7 +42,7 @@ export default function Home() {
             <div className="page-heading py-16">
                 <h1>Match Every Job Perfectly</h1>
                 {!loadingResumes && resumes?.length === 0 ? (
-                    <h2>No resumes found. Upload your first resume to get feedback.</h2>
+                    <h2>ATS-friendly + recruiter-ready + results-driven</h2>
                 ): (
                     <h2>Get your Resume ATS-Optimized and instantly generate job-winning resumes tailored for each role you apply for.</h2>
                 )}
